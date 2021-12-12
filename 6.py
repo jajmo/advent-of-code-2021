@@ -1,10 +1,12 @@
 INPUT_FILE = f"input/{__file__.split('.')[0].rstrip('b')}"
 
-def main():
+def getInput():
     with open(INPUT_FILE, 'r') as f:
-        lines = f.read().splitlines()
+        return f.read().splitlines()
 
-    fish = list(map(int, lines[0].split(',')))
+def partOne():
+    inp = getInput()
+    fish = list(map(int, inp[0].split(',')))
 
     for x in range(0, 80):
         fish.append(-1) # Mark where new fish start
@@ -18,7 +20,25 @@ def main():
                 fish[i] = 6
                 fish.append(8)
 
-    print(len(fish))
+    return len(fish)
+
+
+def partTwo():
+    inp = getInput()
+    fish = dict()
+    days = 80
+    counters = [ int(x) for x in inp[0].split(',') ]
+
+    # cheated from reddit
+    for i in range(9):
+        fish[i] = counters.count(i)
+    for i in range(256):
+        fish[(i+7)%9] += fish[i%9]
+
+    return sum(fish.values())
 
 if __name__ == "__main__":
-    main()
+    one = partOne()
+    two = partTwo()
+    print(f"Part one: {one}")
+    print(f"Part two: {two}")

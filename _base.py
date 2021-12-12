@@ -1,11 +1,19 @@
 INPUT_FILE = f"input/{__file__.split('.')[0].rstrip('b')}"
 
-def main():
+def getInput():
     with open(INPUT_FILE, 'r') as f:
-        lines = f.read().splitlines()
+        return f.read().splitlines()
 
-    for line in lines:
-        # Solution goes here
+def partOne():
+    inp = getInput()
+    return 0
+
+def partTwo():
+    inp = getInput()
+    return 0
 
 if __name__ == "__main__":
-    main()
+    one = partOne()
+    two = partTwo()
+    print(f"Part one: {one}")
+    print(f"Part two: {two}")

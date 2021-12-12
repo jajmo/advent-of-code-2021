@@ -1,32 +1,5 @@
 INPUT_FILE = f"input/{__file__.split('.')[0].rstrip('b')}"
 
-def main():
-    with open(INPUT_FILE, 'r') as f:
-        lines = f.read().splitlines()
-
-    bingoNumbers = map(int, lines[0].split(','))
-    bingoBoards = []
-    matchedNumbers = []
-    currentBoard = -1
-
-    for line in lines[1:]:
-        if line == "":
-            currentBoard += 1
-            bingoBoards.append([])
-            matchedNumbers.append([])
-            continue
-
-        row = list(map(int, [i for i in line.split(' ') if i]))
-        bingoBoards[currentBoard].append(row)
-        matchedNumbers[currentBoard].append([0] * len(row))
-    
-    for calledNumber in bingoNumbers:
-        matchedNumbers = processCalledNumber(calledNumber, bingoBoards, matchedNumbers)
-        bingo = checkForBingo(bingoBoards, matchedNumbers)
-        if bingo != None:
-            break
-    print(getScore(bingoBoards[bingo], matchedNumbers[bingo], calledNumber))
-
 def processCalledNumber(number, boards, matchedNumbers):
     for boardIdx, board in enumerate(boards):
         for rowIdx, row in enumerate(board):
@@ -38,11 +11,13 @@ def processCalledNumber(number, boards, matchedNumbers):
     return matchedNumbers
 
 def checkForBingo(boards, matchedNumbers):
+    winners = []
     # First, check across
     for boardIdx, board in enumerate(matchedNumbers):
         for rowIdx, row in enumerate(board):
             if row == [1] * len(row):
-                return boardIdx
+                winners.append(boardIdx)
+                break
 
     # Second, check vertically
     for boardIdx, board in enumerate(matchedNumbers):
@@ -57,12 +32,13 @@ def checkForBingo(boards, matchedNumbers):
                 row += 1
 
             if bingo:
-                return bingo
+                winners.append(boardIdx)
+                break
 
             row = 0
             col += 1
 
-    return None
+    return winners
 
 def getScore(board, matchedNumbers, calledNumber):
     unmarkedSum = 0;
@@ -73,5 +49,67 @@ def getScore(board, matchedNumbers, calledNumber):
 
     return unmarkedSum * calledNumber
 
+def getInput():
+    with open(INPUT_FILE, 'r') as f:
+        return f.read().splitlines()
+
+def partOne():
+    inp = getInput()
+    bingoNumbers = map(int, inp[0].split(','))
+    bingoBoards = []
+    matchedNumbers = []
+    currentBoard = -1
+
+    for line in inp[1:]:
+        if line == "":
+            currentBoard += 1
+            bingoBoards.append([])
+            matchedNumbers.append([])
+            continue
+
+        row = list(map(int, [i for i in line.split(' ') if i]))
+        bingoBoards[currentBoard].append(row)
+        matchedNumbers[currentBoard].append([0] * len(row))
+    
+    for calledNumber in bingoNumbers:
+        matchedNumbers = processCalledNumber(calledNumber, bingoBoards, matchedNumbers)
+        bingo = checkForBingo(bingoBoards, matchedNumbers)
+        if len(bingo) > 0:
+            break
+    return getScore(bingoBoards[bingo[0]], matchedNumbers[bingo[0]], calledNumber)
+
+def partTwo():
+    inp = getInput()
+    bingoNumbers = map(int, inp[0].split(','))
+    bingoBoards = []
+    matchedNumbers = []
+    currentBoard = -1
+
+    for line in inp[1:]:
+        if line == "":
+            currentBoard += 1
+            bingoBoards.append([])
+            matchedNumbers.append([])
+            continue
+
+        row = list(map(int, [i for i in line.split(' ') if i]))
+        bingoBoards[currentBoard].append(row)
+        matchedNumbers[currentBoard].append([0] * len(row))
+
+    for calledNumber in bingoNumbers:
+        matchedNumbers = processCalledNumber(calledNumber, bingoBoards, matchedNumbers)
+        bingo = checkForBingo(bingoBoards, matchedNumbers)
+        if len(bingo) > 0:
+            if len(bingoBoards) > 1:
+                bingoBoards = [v for i, v in enumerate(bingoBoards) if i not in bingo]
+                matchedNumbers = [v for i, v in enumerate(matchedNumbers) if i not in bingo]
+            elif len(bingoBoards) == 1:
+                break
+
+    return getScore(bingoBoards[bingo[0]], matchedNumbers[bingo[0]], calledNumber)
+
 if __name__ == "__main__":
-    main()
+    one = partOne()
+    two = partTwo()
+    print(f"Part one: {one}")
+    print(f"Part two: {two}")
